@@ -4,11 +4,13 @@ const port = 3000
 const path = require('path')
 const mongoose = require('mongoose')
 const methodOverride = require("method-override");
+const Package = require('./models/kts-admin/package')
+const Event = require('./models/kts-admin/event')
 
 //database connection conf
 mongoose.connect("mongodb://localhost:27017/KtsWeb", {
 	useNewUrlParser: true,
-	useCreateIndex: true,
+	// useCreateIndex: true,
 	useUnifiedTopology: true,
 });
 
@@ -27,10 +29,22 @@ app.use(express.json());
 app.use(methodOverride("_method"));
 
 
-app.get('/kts-admin/home', (req, res) => {
-	res.render('Kts-Admin/home')
+app.get('/kts-admin/home', async (req, res) => {
+	const events = await Event.find({})
+	res.render('Kts-Admin/home', { events })
+})
+
+app.get('/kts-admin/packages', async (req, res) => {
+	const packages = await Package.find({})
+	res.render('Kts-Admin/packages', { packages })
+})
+
+app.get('/kts-admin/packages/:id', async (req, res) => {
+	const { id } = req.params
+	const package = await Package.findById(id)
+	res.render('Kts-Admin/package.ejs', { package })
 })
 
 app.listen(port, () => {
-	console.log(`Listenin on port ${port}`)
+	console.log(`Listening on port ${port}`)
 })
