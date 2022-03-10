@@ -26,4 +26,9 @@ const addEvent = async () => {
 	})
 }
 
+const deleteAllEvents = async () => {
+	await Event.deleteMany({})
+}
+
 addEvent()
+// deleteAllEvents()

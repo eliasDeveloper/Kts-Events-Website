@@ -22,12 +22,9 @@ const packageArr = [
 
 const seedPackages = async () => {
 	await Package.deleteMany({})
-	await Package.insertMany(packageArr)
+	await Package.insertMany(packageArr).then((res) => {
+		console.log(`packages added are: ${res}`)
+	})
 }
 
-seedPackages().then((res) => {
-	console.log(res)
-})
-	.catch((err) => {
-		console.log(err)
-	})
+seedPackages()
