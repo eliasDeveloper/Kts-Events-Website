@@ -37,6 +37,14 @@ app.get('/', (req, res) => {
 	res.render('Landing-Pages/home')
 })
 
+app.get('/about', (req, res) => {
+	res.render('Landing-Pages/about')
+})
+
+app.get('/contact', (req, res) => {
+	res.render('Landing-Pages/contact')
+})
+
 app.get('/kts-admin/home', async (req, res) => {
 	const events = await Event.find({})
 	res.render('Kts-Admin/home', { events })
