@@ -46,11 +46,11 @@ app.get('/contact', (req, res) => {
 })
 
 app.get('/register', (req, res) => {
-	res.render('Landing-Pages/register', { title: "Register" })
+	res.render('Landing-Pages/register', {  layout: "./layouts/register-layout", title: "Register" })
 })
 
 app.get('/login', (req, res) => {
-	res.render('Landing-Pages/login', { title: "Login" })
+	res.render('Landing-Pages/login', { layout: "./layouts/login-layout", title: "Login" })
 })
 //end of landing pages routing
 
