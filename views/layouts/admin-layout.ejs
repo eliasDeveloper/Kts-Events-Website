@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html lang="zxx">
+<html lang="en">
 
 <head>
 	<meta charset="UTF-8">
-	<meta name="description" content="Manup Template">
-	<meta name="keywords" content="Manup, unica, creative, html">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<meta http-equiv="X-UA-Compatible" content="ie=edge">
-	<title></title>
+	<title>
+		<%- title %>
+	</title>
 
 	<!-- Google Font -->
 	<link href="https://fonts.googleapis.com/css?family=Work+Sans:400,500,600,700,800,900&display=swap"
@@ -26,21 +26,18 @@
 	<link rel="stylesheet" href="/css/landing-css/style.css" type="text/css">
 </head>
 
-<%- include('../partials/landing-pages/header') %>
+<body>
+	<%- include('../partials/common-partials/preloader.ejs') %>
 
-	<body>
 		<%- body %>
-
-			<%- include('../partials/landing-pages/footer.ejs') %>
-				<!-- Js Plugins -->
-				<script src="/javascript/landing-js/jquery-3.3.1.min.js"></script>
-				<script src="/javascript/landing-js/bootstrap.min.js"></script>
-				<script src="/javascript/landing-js/jquery.magnific-popup.min.js"></script>
-				<script src="/javascript/landing-js/jquery.countdown.min.js"></script>
-				<script src="/javascript/landing-js/jquery.slicknav.js"></script>
-				<script src="/javascript/landing-js/owl.carousel.min.js"></script>
-				<script src="/javascript/landing-js/main.js"></script>
-	</body>
-
+			<script src="/javascript/landing-js/jquery-3.3.1.min.js"></script>
+			<script src="/javascript/landing-js/bootstrap.min.js"></script>
+			<script src="/javascript/landing-js/jquery.magnific-popup.min.js"></script>
+			<script src="/javascript/landing-js/jquery.countdown.min.js"></script>
+			<script src="/javascript/landing-js/jquery.slicknav.js"></script>
+			<script src="/javascript/landing-js/owl.carousel.min.js"></script>
+			<script src="/javascript/landing-js/main.js"></script>
+			<script src="/javascript/landing-js/landing-functions.js"></script>
+</body>
 
 </html>
