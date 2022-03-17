@@ -5,15 +5,15 @@ const EventSchema = new Schema({
 
 	owner: {
 		type: String,
-		required: true
+		// required: true
 	},
 	title: {
 		type: String,
-		required: true
+		// required: true
 	},
 	description: {
 		type: String,
-		required: true
+		// required: true
 	},
 	packages: [{ type: Schema.Types.ObjectId, ref: 'Package' }],
 	dateOfCreation: {

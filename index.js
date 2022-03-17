@@ -24,7 +24,7 @@ db.once("open", () => {
 
 app.set('view engine', 'ejs')
 app.set('views', path.join(__dirname, '/views'))
-app.set('layout', './layouts/layout')
+app.set('layout', './layouts/landing-pages-layout')
 
 app.use(expressLayouts)
 app.use(express.static(path.join(__dirname, "/public")));
@@ -32,22 +32,42 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(methodOverride("_method"));
 
-
+//landing pages routing
 app.get('/', (req, res) => {
-	res.render('Landing-Pages/home')
+	res.render('Landing-Pages/home', { title: "KTS" })
 })
 
 app.get('/about', (req, res) => {
-	res.render('Landing-Pages/about')
+	res.render('Landing-Pages/about', { title: "About" })
 })
 
 app.get('/contact', (req, res) => {
-	res.render('Landing-Pages/contact')
+	res.render('Landing-Pages/contact', { title: "Contact Us" })
 })
 
+app.get('/register', (req, res) => {
+	res.render('Landing-Pages/register', { title: "Register" })
+})
+
+app.get('/login', (req, res) => {
+	res.render('Landing-Pages/login', { title: "Login" })
+})
+//end of landing pages routing
+
+//start of admin pages routing
 app.get('/kts-admin/home', async (req, res) => {
 	const events = await Event.find({})
-	res.render('Kts-Admin/home', { events })
+	res.render('Kts-Admin/home', { events, layout: "./layouts/admin-layout", title: "Admin - Home" })
+})
+
+app.get('/kts-admin/new-event', (req, res) => {
+	res.render('Kts-Admin/test', { layout: "./layouts/event-layout", title: "Admin - Package", hasEvent: false })
+})
+
+app.get('/kts-admin/package/:id', async (req, res) => {
+	const { id } = req.params
+	const package = await Package.findById(id)
+	res.render('Kts-Admin/package.ejs', { package, layout: "./layouts/admin-layout", title: "Admin - Package", hasPackage: true })
 })
 
 app.get('/kts-admin/packages', async (req, res) => {
@@ -55,11 +75,7 @@ app.get('/kts-admin/packages', async (req, res) => {
 	res.render('Kts-Admin/packages', { packages })
 })
 
-app.get('/kts-admin/packages/:id', async (req, res) => {
-	const { id } = req.params
-	const package = await Package.findById(id)
-	res.render('Kts-Admin/package.ejs', { package })
-})
+
 
 app.listen(port, () => {
 	console.log(`Listening on port ${port}`)
