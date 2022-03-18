@@ -46,7 +46,7 @@ app.get('/contact', (req, res) => {
 })
 
 app.get('/register', (req, res) => {
-	res.render('Landing-Pages/register', {  layout: "./layouts/register-layout", title: "Register" })
+	res.render('Landing-Pages/register', { layout: "./layouts/register-layout", title: "Register" })
 })
 
 app.get('/login', (req, res) => {
@@ -61,7 +61,7 @@ app.get('/kts-admin/home', async (req, res) => {
 })
 
 app.get('/kts-admin/new-event', (req, res) => {
-	res.render('Kts-Admin/test', { layout: "./layouts/event-layout", title: "Admin - Package", hasEvent: false })
+	res.render('Kts-Admin/event', { layout: "./layouts/event-layout", title: "Admin - Package", hasEvent: false })
 })
 
 app.get('/kts-admin/package/:id', async (req, res) => {

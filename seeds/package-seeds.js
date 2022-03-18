@@ -18,6 +18,19 @@ const packageArr = [
 	{ title: 'Go to America', description: ' the majority have suffered alteration in some form, by injected humour, or randomised words which do', price: 10.99 },
 	{ title: 'Go to Lebanon', description: ' Welcome to turkey fun place', price: 51.99 },
 	{ title: 'Go to Hell', description: ' random data', price: 10.99 },
+	{ title: 'Go to anyweher', description: ' random data', price: 10.99 },
+	{ title: 'Go to bla', description: ' random data', price: 10.99 },
+	{ title: 'Go to the kitchen', description: ' random data', price: 154180 },
+	{ title: 'Go to valhalla', description: ' random data', price: 10.99 },
+	{ title: 'Go to anunu', description: ' random data', price: 10210.99 },
+	{ title: 'Go to anounou', description: ' random data', price: 115120.99 },
+	{ title: 'Go to anonimous', description: ' random data', price: 10.99 },
+	{ title: 'Go to france', description: ' random data', price: 1011212.99 },
+	{ title: 'Go to germany', description: ' random data', price: 10434.99 },
+	{ title: 'Go to ukrain', description: ' random data', price: 1430.3 },
+	{ title: 'Go to Lebanon', description: ' random data', price: 110.99 },
+	{ title: 'Go to egypt', description: ' random data', price: 1023.99 },
+
 ]
 
 const seedPackages = async () => {
