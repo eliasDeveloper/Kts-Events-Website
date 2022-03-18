@@ -14,21 +14,24 @@ db.once("open", () => {
 });
 
 
-const addEvent = async () => {
-	const package = await Package.findOne({ title: 'Go to canada' })
-	const newEvent = new Event({ owner: 'fady chebly', title: 'First Event', description: 'Ayre b nicolas' })
-	await newEvent.save().then((res) => {
-		console.log(res)
-	})
-	newEvent.packages.push(package)
-	await newEvent.save().then((res) => {
-		console.log(res)
-	})
+const addEvents = async () => {
+	const package = await Package.find({})
+	for (let i = 0; i < package.length; i++) {
+		let newEvent = new Event({ owner: 'fady chebly', title: `Event num: ${i}`, description: `this is a test num: ${i}` })
+		let arrRandom = Math.floor(Math.random() * package.length)
+		for (let j = 0; j < arrRandom; j++) {
+			let packageRandom = Math.floor(Math.random() * package.length)
+			newEvent.packages.push(package[packageRandom])
+		}
+		await newEvent.save().then((res) => {
+			console.log(res)
+		}).catch(err => console.log(err))
+	}
 }
 
 const deleteAllEvents = async () => {
 	await Event.deleteMany({})
 }
 
-addEvent()
-// deleteAllEvents()
+deleteAllEvents()
+addEvents()

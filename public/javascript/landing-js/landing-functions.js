@@ -1,16 +1,25 @@
 window.onload = function () {
-	const navHeads = document.querySelectorAll('.removeAddActive')
-	console.log(navHeads)
-	//adds the class active on the current head
-	for (let i = 0; i < navHeads.length; i++) {
-		let currentHead = navHeads[i]
-		navHeads[i].addEventListener('click', () => {
-			let current = document.querySelector(".active");
-			current.classList.remove(" active");
-			currentHead.classList.add(" active")
-		})
+
+	let home = document.querySelector('#homeHead')
+	let contact = document.querySelector('#contactHead')
+	let about = document.querySelector('#aboutHead')
+
+	let currenpath = window.location.pathname
+	if (currenpath == '/about') {
+		about.classList.add("active")
+		home.classList.remove("active")
+		contact.classList.remove("active")
 	}
-	//end of function
+	else if (currenpath == '/contact') {
+		about.classList.remove("active")
+		home.classList.remove("active")
+		contact.classList.add("active")
+	}
+	else {
+		about.classList.remove("active")
+		home.classList.add("active")
+		contact.classList.remove("active")
+	}
 
 }
 
