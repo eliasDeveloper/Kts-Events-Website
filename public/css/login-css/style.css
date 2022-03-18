@@ -1180,27 +1180,6 @@ ol {
 	transition: all 0.3s;
 }
 
-.footer-text ul li a:hover {
-	color: #f44949;
-}
-
-.footer-text .copyright-text {
-	font-size: 14px;
-	color: #a0a1b5;
-	margin-bottom: 28px;
-}
-
-.footer-text .copyright-text i {
-	color: #f44949;
-}
-
-.footer-text .copyright-text a {
-	color: #a0a1b5;
-}
-
-.footer-text .copyright-text a:hover {
-	color: #f44949;
-}
 
 .footer-text .ft-social a {
 	display: inline-block;
