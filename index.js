@@ -11,7 +11,8 @@ const User = require('./models/kts-admin/user')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const verify =  require('../Kts-Events-Website/middleware/verifyToken')
-const session = require('express-session')
+const cookieParser = require('cookie-parser')
+
 //database connection conf
 mongoose.connect("mongodb+srv://rhino11:rhino11@cluster0.wz45u.mongodb.net/KTS-DB?retryWrites=true&w=majorityy", {
 	useNewUrlParser: true,
@@ -43,11 +44,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(methodOverride("_method"));
 
-app.use(session({
-    secret: 'cookie_secret',
-    resave: true,
-    saveUninitialized: true
-}));
+
+app.use(cookieParser())
 
 //landing pages routing
 app.get('/', (req, res) => {
@@ -70,7 +68,12 @@ app.get('/login', (req, res) => {
 	res.render('Landing-Pages/login', { layout: "./layouts/login-layout", title: "Login" })
 })
 app.get('/welcome', (req, res) => {
+	if(req.cookies.token)
 	res.render('Landing-Pages/welcome', { layout: "./layouts/welcome-layout", title: "Welcome!!" })
+	else
+	res.redirect('login')
+	
+	
 })
 //end of landing pages routing
 
@@ -122,6 +125,7 @@ app.post('/api/user/register',verify, async (req, res)=> {
     }
 })
 app.post('/login', async(req,res) =>{
+	res.clearCookie("token");
 	const {email, password}= req.body
 	const user = await User.findOne({email})	
 	if(!user){
@@ -131,29 +135,18 @@ app.post('/login', async(req,res) =>{
     if(!validPass){
 		return res.status(400).send('failed login: invalid credentials')
     }
-	// else if(validPass){
-	req.session.user_id= 'loggedIn'
-	// 	res.redirect('/welcome')
-	// }
-	jwt.sign({user}, 'secretkey',{expiresIn: '24h'}, (err, token)=>{
-        res.json({
-            token
-        })
-    });
-	
+    const token = jwt.sign({user}, 'b23813da7f066be253e3bdfa41f87e010b585ff970ff54e428fdcc34b0ad1e50', {expiresIn: '24h'})
+	res.cookie('token', token.toString())
+	res.redirect('/welcome')
+		
 })
 app.post('/logout', (req,res)=>{
-	// req.session.user_id = null
-	req.session.destroy();
-	// req.session.destroy()
-	// req.session.destroy((err) => {
-	// 	res.redirect('/') // will always fire after session is destroyed
-	//   })
+	res.clearCookie("token");
 	res.redirect('/login')
 })
 
 app.get('/welcome', (req,res) =>{
-	if(!req.session.user_id){
+	if(req.cookies.token !== null ){
 		return res.redirect('/login')
 	}
 	res.render('welcome')
