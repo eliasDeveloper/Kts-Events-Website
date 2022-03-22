@@ -11,9 +11,9 @@ const User = require('./models/kts-admin/user')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const verify = require('./middleware/verifyToken')
-const session = require('express-session')
 const cookieParser = require('cookie-parser')
-
+const nodemailer = require('nodemailer')
+require('dotenv').config()
 
 // database connection conf
 mongoose.connect("mongodb+srv://rhino11:rhino11@cluster0.wz45u.mongodb.net/KTS-DB?retryWrites=true&w=majority", {
@@ -51,11 +51,6 @@ app.use(express.json());
 app.use(methodOverride("_method"));
 app.use(cookieParser())
 
-app.use(session({
-	secret: 'cookie_secret',
-	resave: true,
-	saveUninitialized: true
-}));
 
 //landing pages routing
 app.get('/', (req, res) => {
@@ -173,6 +168,62 @@ app.get('/welcome', verify, (req, res) => {
 	res.render('welcome')
 })
 
+<<<<<<< HEAD
+=======
+app.get('/welcome', (req, res) => {
+	if (req.cookies.token) res.render('Landing-Pages/welcome', { layout: "./layouts/welcome-layout", title: "Welcome!!" })
+	else res.redirect('login')
+})
+
+app.post('/contact',(req,res)=>{
+	let transporter = nodemailer.createTransport({
+		service: 'gmail',
+		auth: {
+			user: process.env.EMAIL,
+			pass: process.env.PASSWORD
+		}
+	});
+	var mailOptions = {
+		from: req.body.name + '&lt;' +process.env.EMAIL + '&gt;',
+		to: 'codebookinc@gmail.com, fady.chebly1@gmail.com',
+		subject: 'KTS Feedback',
+		text: req.body.feedback 
+	};
+	transporter.sendMail(mailOptions,(err,res)=>{
+		if(err){
+			console.log(err);
+		}
+		else {
+			console.log('success')
+		}
+	});
+	res.redirect('contact')
+})
+app.post('/subscribe',(req,res)=>{
+	let transporter = nodemailer.createTransport({
+		service: 'gmail',
+		auth: {
+			user: process.env.EMAIL,
+			pass: process.env.PASSWORD
+		}
+	});
+	var mailOptions = {
+		from: process.env.EMAIL,
+		to: 'fady.chebly1@gmail.com',
+		subject: 'Newsletter Subscription Request',
+		text: 'Dear Nicolas, kindly subscribe me to your newsletter ya akhou el sharmuta '+req.body.email 
+	};
+	transporter.sendMail(mailOptions,(err,res)=>{
+		if(err){
+			console.log(err);
+		}
+		else {
+			console.log('success')
+		}
+	});
+	res.redirect('/')
+})
+>>>>>>> develop
 app.listen(port, () => {
 	console.log(`Listening on port ${port}`)
 })

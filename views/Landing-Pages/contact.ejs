@@ -66,19 +66,19 @@
 		</div>
 		<div class="row">
 			<div class="col-lg-12">
-				<form action="#" class="comment-form contact-form">
+				<form action="/contact" method="POST" class="comment-form contact-form">
 					<div class="row">
 						<div class="col-lg-4">
-							<input type="text" placeholder="Name">
+							<input type="text" placeholder="Name" name="name">
 						</div>
 						<div class="col-lg-4">
-							<input type="text" placeholder="Email">
+							<input type="text" placeholder="Email" name="email">
 						</div>
 						<div class="col-lg-4">
-							<input type="text" placeholder="Phone">
+							<input type="text" placeholder="Phone" name="phone">
 						</div>
 						<div class="col-lg-12 text-center">
-							<textarea placeholder="Messages"></textarea>
+							<textarea placeholder="Messages" name="feedback"></textarea>
 							<button type="submit" class="site-btn">Send Message</button>
 						</div>
 					</div>
