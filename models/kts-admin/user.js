@@ -18,6 +18,12 @@ const userSchema = new Schema({
         type: String,
         required: [true, 'Password cant be blank'],
         min:6
+    },
+    isAdmin:{
+        type: Number,
+        max:2,
+        min:0,
+        default:0
     }
 })
 

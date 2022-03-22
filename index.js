@@ -97,7 +97,7 @@ app.get('/kts-admin/packages', async (req, res) => {
 	const packages = await Package.find({})
 	res.render('Kts-Admin/packages', { packages })
 })
-app.post('/api/user/register',verify, async (req, res)=> {
+app.post('/api/user/register', async (req, res)=> {
     const {error} = schema.validate(req.body);
     //const {error} = regsiterValidation(req.body);
     if(error){
@@ -145,7 +145,7 @@ app.post('/logout', (req,res)=>{
 	res.redirect('/login')
 })
 
-app.get('/welcome', (req,res) =>{
+app.get('/welcome',verify, (req,res) =>{
 	if(req.cookies.token !== null ){
 		return res.redirect('/login')
 	}
