@@ -5,7 +5,7 @@ const EventSchema = new Schema({
 
 	owner: {
 		type: String,
-		// required: true
+		required: true
 	},
 	title: {
 		type: String,
