@@ -5,7 +5,7 @@ const EventSchema = new Schema({
 
 	owner: {
 		type: String,
-		required: true
+		// required: true
 	},
 	title: {
 		type: String,
@@ -18,7 +18,7 @@ const EventSchema = new Schema({
 	packages: [{ type: Schema.Types.ObjectId, ref: 'Package' }],
 	dateOfCreation: {
 		type: Date,
-		// required: true
+		// default: date()
 	}
 
 })

@@ -18,7 +18,6 @@ require('dotenv').config()
 // database connection conf
 mongoose.connect("mongodb+srv://rhino11:rhino11@cluster0.wz45u.mongodb.net/KTS-DB?retryWrites=true&w=majority", {
 	useNewUrlParser: true,
-	// useCreateIndex: true,
 	useUnifiedTopology: true,
 });
 
@@ -88,9 +87,19 @@ app.get('/kts-admin/new-event', (req, res) => {
 	res.render('Kts-Admin/event-owner', { layout: "./layouts/event-layout", title: "Admin - New Event" })
 })
 
-app.post('/kts-admin/event', (req, res) => {
+app.post('/kts-admin/event', async (req, res) => {
 	const { email } = req.body
-	console.log(email)
+	const newEvent = new Event({ owner: `${email}` })
+	await newEvent.save().then(res => { console.log(newEvent) }).catch(err => { console.log(err) })
+	const id = newEvent._id.toString()
+	// console.log(await Event.find())
+	res.redirect(`/kts-admin/event/${id}`)
+})
+
+app.get('/kts-admin/event/:id', async (req, res) => {
+	const { id } = req.params
+	const event = await Event.findById(id).then(res => { console.log(res) }).catch(err => { console.log(err) })
+	res.render('Kts-Admin/event', { layout: "./layouts/event-layout", title: "Event" })
 })
 
 app.get('/kts-admin/package/:id', async (req, res) => {
@@ -164,7 +173,7 @@ app.get('/welcome', (req, res) => {
 	else res.redirect('login')
 })
 
-app.post('/contact',(req,res)=>{
+app.post('/contact', (req, res) => {
 	let transporter = nodemailer.createTransport({
 		service: 'gmail',
 		auth: {
@@ -173,13 +182,13 @@ app.post('/contact',(req,res)=>{
 		}
 	});
 	var mailOptions = {
-		from: req.body.name + '&lt;' +process.env.EMAIL + '&gt;',
+		from: req.body.name + '&lt;' + process.env.EMAIL + '&gt;',
 		to: 'codebookinc@gmail.com, fady.chebly1@gmail.com',
 		subject: 'KTS Feedback',
-		text: req.body.feedback 
+		text: req.body.feedback
 	};
-	transporter.sendMail(mailOptions,(err,res)=>{
-		if(err){
+	transporter.sendMail(mailOptions, (err, res) => {
+		if (err) {
 			console.log(err);
 		}
 		else {
@@ -188,7 +197,7 @@ app.post('/contact',(req,res)=>{
 	});
 	res.redirect('contact')
 })
-app.post('/subscribe',(req,res)=>{
+app.post('/subscribe', (req, res) => {
 	let transporter = nodemailer.createTransport({
 		service: 'gmail',
 		auth: {
@@ -200,10 +209,10 @@ app.post('/subscribe',(req,res)=>{
 		from: process.env.EMAIL,
 		to: 'fady.chebly1@gmail.com',
 		subject: 'Newsletter Subscription Request',
-		text: 'Dear Nicolas, kindly subscribe me to your newsletter ya akhou el sharmuta '+req.body.email 
+		text: 'Dear Nicolas, kindly subscribe me to your newsletter ya akhou el sharmuta ' + req.body.email
 	};
-	transporter.sendMail(mailOptions,(err,res)=>{
-		if(err){
+	transporter.sendMail(mailOptions, (err, res) => {
+		if (err) {
 			console.log(err);
 		}
 		else {
