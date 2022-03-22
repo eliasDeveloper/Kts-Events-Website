@@ -168,14 +168,12 @@ app.get('/welcome', verify, (req, res) => {
 	res.render('welcome')
 })
 
-<<<<<<< HEAD
-=======
 app.get('/welcome', (req, res) => {
 	if (req.cookies.token) res.render('Landing-Pages/welcome', { layout: "./layouts/welcome-layout", title: "Welcome!!" })
 	else res.redirect('login')
 })
 
-app.post('/contact',(req,res)=>{
+app.post('/contact', (req, res) => {
 	let transporter = nodemailer.createTransport({
 		service: 'gmail',
 		auth: {
@@ -184,13 +182,13 @@ app.post('/contact',(req,res)=>{
 		}
 	});
 	var mailOptions = {
-		from: req.body.name + '&lt;' +process.env.EMAIL + '&gt;',
+		from: req.body.name + '&lt;' + process.env.EMAIL + '&gt;',
 		to: 'codebookinc@gmail.com, fady.chebly1@gmail.com',
 		subject: 'KTS Feedback',
-		text: req.body.feedback 
+		text: req.body.feedback
 	};
-	transporter.sendMail(mailOptions,(err,res)=>{
-		if(err){
+	transporter.sendMail(mailOptions, (err, res) => {
+		if (err) {
 			console.log(err);
 		}
 		else {
@@ -199,7 +197,7 @@ app.post('/contact',(req,res)=>{
 	});
 	res.redirect('contact')
 })
-app.post('/subscribe',(req,res)=>{
+app.post('/subscribe', (req, res) => {
 	let transporter = nodemailer.createTransport({
 		service: 'gmail',
 		auth: {
@@ -211,10 +209,10 @@ app.post('/subscribe',(req,res)=>{
 		from: process.env.EMAIL,
 		to: 'fady.chebly1@gmail.com',
 		subject: 'Newsletter Subscription Request',
-		text: 'Dear Nicolas, kindly subscribe me to your newsletter ya akhou el sharmuta '+req.body.email 
+		text: 'Dear Nicolas, kindly subscribe me to your newsletter ya akhou el sharmuta ' + req.body.email
 	};
-	transporter.sendMail(mailOptions,(err,res)=>{
-		if(err){
+	transporter.sendMail(mailOptions, (err, res) => {
+		if (err) {
 			console.log(err);
 		}
 		else {
@@ -223,7 +221,6 @@ app.post('/subscribe',(req,res)=>{
 	});
 	res.redirect('/')
 })
->>>>>>> develop
 app.listen(port, () => {
 	console.log(`Listening on port ${port}`)
 })
