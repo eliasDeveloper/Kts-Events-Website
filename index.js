@@ -12,17 +12,20 @@ const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const verify = require('./middleware/verifyToken')
 const session = require('express-session')
-//database connection conf
-// mongoose.connect("mongodb+srv://rhino11:rhino11@cluster0.wz45u.mongodb.net/KTS-DB?retryWrites=true&w=majorityy", {
-// 	useNewUrlParser: true,
-// 	// useCreateIndex: true,
-// 	useUnifiedTopology: true,
-// });
+const cookieParser = require('cookie-parser')
 
-mongoose.connect("mongodb://localhost:27017/KtsWeb", {
+
+// database connection conf
+mongoose.connect("mongodb+srv://rhino11:rhino11@cluster0.wz45u.mongodb.net/KTS-DB?retryWrites=true&w=majorityy", {
 	useNewUrlParser: true,
+	// useCreateIndex: true,
 	useUnifiedTopology: true,
 });
+
+// mongoose.connect("mongodb://localhost:27017/KtsWeb", {
+// 	useNewUrlParser: true,
+// 	useUnifiedTopology: true,
+// });
 
 const db = mongoose.connection;
 db.on("error", console.error.bind(console, "connection error"));
@@ -47,6 +50,7 @@ app.use(express.static(path.join(__dirname, "/public")));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(methodOverride("_method"));
+app.use(cookieParser())
 
 app.use(session({
 	secret: 'cookie_secret',
@@ -86,12 +90,12 @@ app.get('/kts-admin/home', async (req, res) => {
 })
 
 app.get('/kts-admin/new-event', (req, res) => {
-	res.render('Kts-Admin/event-owner', { layout: "./layouts/event-layout", title: "Admin - Package", hasEvent: false })
+	res.render('Kts-Admin/event-owner', { layout: "./layouts/event-layout", title: "Admin - New Event" })
 })
 
 app.post('/kts-admin/event', (req, res) => {
-	const email = req.body
-	const
+	const { email } = req.body
+	console.log(email)
 })
 
 app.get('/kts-admin/package/:id', async (req, res) => {
@@ -104,7 +108,7 @@ app.get('/kts-admin/packages', async (req, res) => {
 	const packages = await Package.find({})
 	res.render('Kts-Admin/packages', { packages })
 })
-app.post('/api/user/register', verify, async (req, res) => {
+app.post('/api/user/register', async (req, res) => {
 	const { error } = schema.validate(req.body);
 	//const {error} = regsiterValidation(req.body);
 	if (error) {
@@ -131,7 +135,9 @@ app.post('/api/user/register', verify, async (req, res) => {
 		res.status(400).send(err)
 	}
 })
+
 app.post('/login', async (req, res) => {
+	res.clearCookie("token");
 	const { email, password } = req.body
 	const user = await User.findOne({ email })
 	if (!user) {
@@ -141,33 +147,28 @@ app.post('/login', async (req, res) => {
 	if (!validPass) {
 		return res.status(400).send('failed login: invalid credentials')
 	}
-	// else if(validPass){
-	req.session.user_id = 'loggedIn'
-	// 	res.redirect('/welcome')
-	// }
-	jwt.sign({ user }, 'secretkey', { expiresIn: '24h' }, (err, token) => {
-		res.json({
-			token
-		})
-	});
-
+	const token = jwt.sign({ user }, 'b23813da7f066be253e3bdfa41f87e010b585ff970ff54e428fdcc34b0ad1e50', { expiresIn: '24h' })
+	res.cookie('token', token.toString())
+	res.redirect('/welcome')
 })
+
 app.post('/logout', (req, res) => {
-	// req.session.user_id = null
-	req.session.destroy();
-	// req.session.destroy()
-	// req.session.destroy((err) => {
-	// 	res.redirect('/') // will always fire after session is destroyed
-	//   })
+	res.clearCookie("token");
 	res.redirect('/login')
 })
 
-app.get('/welcome', (req, res) => {
-	if (!req.session.user_id) {
+app.get('/welcome', verify, (req, res) => {
+	if (req.cookies.token) {
 		return res.redirect('/login')
 	}
 	res.render('welcome')
 })
+
+app.get('/welcome', (req, res) => {
+	if (req.cookies.token) res.render('Landing-Pages/welcome', { layout: "./layouts/welcome-layout", title: "Welcome!!" })
+	else res.redirect('login')
+})
+
 
 app.listen(port, () => {
 	console.log(`Listening on port ${port}`)
