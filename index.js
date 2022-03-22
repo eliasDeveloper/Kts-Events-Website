@@ -16,9 +16,8 @@ const cookieParser = require('cookie-parser')
 
 
 // database connection conf
-mongoose.connect("mongodb+srv://rhino11:rhino11@cluster0.wz45u.mongodb.net/KTS-DB?retryWrites=true&w=majorityy", {
+mongoose.connect("mongodb+srv://rhino11:rhino11@cluster0.wz45u.mongodb.net/KTS-DB?retryWrites=true&w=majority", {
 	useNewUrlParser: true,
-	// useCreateIndex: true,
 	useUnifiedTopology: true,
 });
 
@@ -93,9 +92,19 @@ app.get('/kts-admin/new-event', (req, res) => {
 	res.render('Kts-Admin/event-owner', { layout: "./layouts/event-layout", title: "Admin - New Event" })
 })
 
-app.post('/kts-admin/event', (req, res) => {
+app.post('/kts-admin/event', async (req, res) => {
 	const { email } = req.body
-	console.log(email)
+	const newEvent = new Event({ owner: `${email}` })
+	await newEvent.save().then(res => { console.log(newEvent) }).catch(err => { console.log(err) })
+	const id = newEvent._id.toString()
+	// console.log(await Event.find())
+	res.redirect(`/kts-admin/event/${id}`)
+})
+
+app.get('/kts-admin/event/:id', async (req, res) => {
+	const { id } = req.params
+	const event = await Event.findById(id).then(res => { console.log(res) }).catch(err => { console.log(err) })
+	res.render('Kts-Admin/event', { layout: "./layouts/event-layout", title: "Event" })
 })
 
 app.get('/kts-admin/package/:id', async (req, res) => {
@@ -163,12 +172,6 @@ app.get('/welcome', verify, (req, res) => {
 	}
 	res.render('welcome')
 })
-
-app.get('/welcome', (req, res) => {
-	if (req.cookies.token) res.render('Landing-Pages/welcome', { layout: "./layouts/welcome-layout", title: "Welcome!!" })
-	else res.redirect('login')
-})
-
 
 app.listen(port, () => {
 	console.log(`Listening on port ${port}`)
