@@ -66,8 +66,12 @@ app.get('/register', (req, res) => {
 app.get('/login', (req, res) => {
 	res.render('Landing-Pages/login', { layout: "./layouts/login-layout", title: "Login" })
 })
-app.get('/welcome', verify,(req, res) => {
+app.get('/welcome', (req, res) => {
+	if(req.cookies.token)
 	res.render('Landing-Pages/welcome', { layout: "./layouts/welcome-layout", title: "Welcome!!" })
+	else{
+	res.redirect('login')
+	}
 })
 //end of landing pages routing
 
@@ -204,11 +208,13 @@ app.post('/logout', (req, res) => {
 	res.redirect('/login')
 })
 
-app.get('/welcome', verify, (req, res) => {
-	if (req.cookies.token) {
-		return res.redirect('login')
+app.get('/welcome',verify, (req, res) => {
+	 if (!req.cookies.token) {
+	 	return res.redirect('login')
 	}
-	res.redirect('welcome')
+	else{
+	 return res.redirect('welcome')
+	}
 })
 
 app.post('/contact', (req, res) => {
