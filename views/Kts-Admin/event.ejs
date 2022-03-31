@@ -4,24 +4,13 @@
 	<br>
 </form>
 
-<% if(event.packages.length> 0) { %>
-	<% for(let i=0; i < event.packages.length; i++){ %>
-		<div class="col-md-4">
-			<div class="card" style="width: 18rem;">
-				<img src="..." class="card-img-top" alt="...">
-				<div class="card-body">
-					<h5 class="card-title">
-						<%= event.packages[i].title %>
-					</h5>
-					<p class="card-text">
-						<%= event.packages[i].description %>
-					</p>
-					<a href="#" class="btn btn-primary">
-						<%= event.packages[i].price %>
-					</a>
-				</div>
-			</div>
-		</div>
+<% if(Packages.packages.length> 0) { %>
+	<% for(let i=0; i < Packages.packages.length; i++){ %>
+		<h1>
+			<a href="/kts-admin/<%= event._id.toString() %>/package/<%=Packages.packages[i]._id.toString() %>">
+				<%=Packages.packages[i].title %>
 
-		<%} %>
-			<%}%>
+			</a>
+		</h1>
+		<% } %>
+			<% } %>
