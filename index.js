@@ -35,7 +35,6 @@ db.once("open", () => {
 
 const Joi = require('@hapi/joi');
 const schema = Joi.object({
-	name: Joi.string().min(6).required(),
 	email: Joi.string().min(6).required().email(),
 	password: Joi.string().min(6).required()
 });
@@ -73,7 +72,11 @@ app.get('/login', (req, res) => {
 	res.render('Landing-Pages/login', { layout: "./layouts/login-layout", title: "Login" })
 })
 app.get('/welcome', (req, res) => {
+	if(req.cookies.token)
 	res.render('Landing-Pages/welcome', { layout: "./layouts/welcome-layout", title: "Welcome!!" })
+	else{
+	res.redirect('login')
+	}
 })
 //end of landing pages routing
 
@@ -158,6 +161,10 @@ app.post('/api/user/register', async (req, res) => {
 
 app.post('/login', async (req, res) => {
 	res.clearCookie("token");
+	const { error } = schema.validate(req.body)
+	if(error){
+		return res.status(400).send(error.details[0].message)
+	}
 	const { email, password } = req.body
 	const user = await User.findOne({ email })
 	if (!user) {
@@ -177,11 +184,13 @@ app.post('/logout', (req, res) => {
 	res.redirect('/login')
 })
 
-app.get('/welcome', verify, (req, res) => {
-	if (req.cookies.token) {
-		return res.redirect('/login')
+app.get('/welcome',verify, (req, res) => {
+	 if (!req.cookies.token) {
+	 	return res.redirect('login')
 	}
-	res.render('welcome')
+	else{
+	 return res.redirect('welcome')
+	}
 })
 
 app.post('/contact', (req, res) => {
@@ -195,7 +204,7 @@ app.post('/contact', (req, res) => {
 	var mailOptions = {
 		from: req.body.name + '&lt;' + process.env.EMAIL + '&gt;',
 		to: 'codebookinc@gmail.com, fady.chebly1@gmail.com',
-		subject: 'KTS Feedback',
+		subject: 'Message from the Contact Us',
 		text: req.body.feedback
 	};
 	transporter.sendMail(mailOptions, (err, res) => {
@@ -219,9 +228,9 @@ app.post('/subscribe', (req, res) => {
 	});
 	var mailOptions = {
 		from: process.env.EMAIL,
-		to: 'fady.chebly1@gmail.com',
-		subject: 'Newsletter Subscription Request',
-		text: 'Dear Nicolas, kindly subscribe me to your newsletter ya akhou el sharmuta ' + req.body.email
+		to: 'codebookinc@gmail.com, fady.chebly1@gmail.com',
+		subject: 'Email Newsletter Subscription Request',
+		text: 'Dear KTS Administration Team,\n\n\nKindly approve & accept the request for the subscription of this email,\n' +req.body.email +'\nin order to complete the subscription to your Email Newsletter. \n \n \n \n' +'Thank you & Best Regards'
 	};
 	transporter.sendMail(mailOptions, (err, res) => {
 		if (err) {
