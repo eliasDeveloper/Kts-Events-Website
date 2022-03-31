@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken')
 
 module.exports = function (req, res, next) {
-	const token = req.headers['authorization']
+	const token = req.cookies.token//req.headers['authorization']
 
 	//localStorage.setItem('access_token', token)
 	if (typeof token === 'undefined' || !token) return res.status(401).send('Access Denied')
