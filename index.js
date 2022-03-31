@@ -16,7 +16,12 @@ const nodemailer = require('nodemailer')
 require('dotenv').config()
 
 // database connection conf
-mongoose.connect("mongodb+srv://rhino11:rhino11@cluster0.wz45u.mongodb.net/KTS-DB?retryWrites=true&w=majority", {
+// mongoose.connect("mongodb+srv://rhino11:rhino11@cluster0.wz45u.mongodb.net/KTS-DB?retryWrites=true&w=majority", {
+// 	useNewUrlParser: true,
+// 	useUnifiedTopology: true,
+// });
+
+mongoose.connect("mongodb://localhost:27017/KtsWeb", {
 	useNewUrlParser: true,
 	useUnifiedTopology: true,
 });
@@ -79,8 +84,7 @@ app.get('/kts-admin/home', async (req, res) => {
 	res.render('Kts-Admin/home', { events, layout: "./layouts/admin-layout", title: "Admin - Home" })
 })
 
-//start of add event
-//start of event owner add page
+//event owner add page
 app.get('/kts-admin/new-event', (req, res) => {
 	res.render('Kts-Admin/event-owner', { layout: "./layouts/admin-layout", title: "Admin - New Event" })
 })
@@ -98,58 +102,30 @@ app.post('/kts-admin/event', async (req, res) => {
 //start of add needed data and package for a specific event
 app.get('/kts-admin/event/:id', async (req, res) => {
 	const { id } = req.params
-	let event = await Event.findById(id).then(res => { console.log(`success to reach the new event with id: ${id} ${res}`) }).catch(err => { console.log(err) })
-	while (event == undefined) {
-		event = await Event.findById(id)
-		console.log('in the loop')
-	}
-	res.render('Kts-Admin/event', { layout: "./layouts/admin-layout", title: "Event", event })
-})
-
-//returns with the package added concerning the specific event
-app.post('/kts-admin/event/:id', async (req, res) => {
-	const { id } = req.params
-	const newPackage = req.body
-	let addedPackage = new Package({ title: newPackage.title, description: newPackage.description, price: newPackage.price })
-	await addedPackage.save().then(res => { console.log(`added package is ${res}`) })
-	let Relatedevent = await Event.findById(id).then(res => {
-		console.log(`will add now a new package for ${res}`)
-	})
-		.catch(err => { console.log(err) })
-	while (Relatedevent == undefined) {
-		Relatedevent = await Event.findById(id)
-	}
-	let relatedPackage = await Package.findById(addedPackage._id)
-	while (relatedPackage == undefined) {
-		relatedPackage = await Package.findById(addedPackage._id)
-	}
-	Relatedevent.packages.push(relatedPackage)
-	await Relatedevent.save().then(res => { console.log(`the event is now as follows ${res}`) })
-	let event = await Event.findById(id).populate('packages').then(res => {
-		console.log(event)
-	}).catch(err => console.log(`try again`))
-	// while (event == undefined) {
-	// 	event = await Event.findById(id).populate('packages').then(res => {
-	// 		console.log(event)
-	// 	}).catch(err => console.log(`try again`))
-	// }
-	res.render('Kts-Admin/event', { layout: "./layouts/test", title: "Event", event })
+	let event = await Event.findById(id)
+	let Packages = await event.populate('packages')
+	console.log(`ayre b yahouwaza ${Packages}`)
+	res.render('Kts-Admin/event', { layout: "./layouts/admin-layout", title: "Event", event, id, Packages })
 })
 
 // start of add package go to add a package related to the event
 app.get('/kts-admin/event/:id/package', async (req, res) => {
 	const { id } = req.params
-	console.log(id)
-	let relatedEvent = await Event.findById(id).then(res => {
-		console.log(`the package is linked to the following event ${res}`)
-	})
-	while (relatedEvent == undefined) {
-		relatedEvent = await Event.findById(id)
-	}
-	res.render('Kts-Admin/package', { layout: "./layouts/test", title: "package", relatedEvent })
+	res.render('Kts-Admin/package', { layout: "./layouts/test", title: "package", id })
 })
 //end of add package
 
+//returns with the package added concerning the specific event
+app.post('/kts-admin/event/:id/add-package', async (req, res) => {
+	const { id } = req.params
+	let event = await Event.findById(id)
+	const newPackage = req.body
+	let addedPackage = new Package({ title: newPackage.title, description: newPackage.description, price: newPackage.price })
+	await addedPackage.save()
+	event.packages.push(addedPackage._id)
+	await event.save()
+	res.redirect(`/kts-admin/event/${id}`)
+})
 
 
 app.post('/api/user/register', async (req, res) => {
