@@ -1,7 +1,8 @@
 const jwt = require('jsonwebtoken')
+require('dotenv').config()
 
 module.exports = function (req, res, next) {
-	const token = req.headers['authorization']
+	const token = req.cookies.token//req.headers['authorization']
 
 	//localStorage.setItem('access_token', token)
 	if (typeof token === 'undefined' || !token) return res.status(401).send('Access Denied')
@@ -9,7 +10,7 @@ module.exports = function (req, res, next) {
 	try {
 		const bearer = token.split(' ')
 		const bearerToken = bearer[1];
-		const verified = jwt.verify(token, 'b23813da7f066be253e3bdfa41f87e010b585ff970ff54e428fdcc34b0ad1e50');
+		const verified = jwt.verify(token, process.env.TOKEN_SECRET_KEY);
 		req.user = verified;
 		req.token = bearerToken
 		next()

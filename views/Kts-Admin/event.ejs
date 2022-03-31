@@ -1,29 +1,16 @@
-<div id="msform">
-	<!-- progressbar -->
-	<ul id="progressbar">
-		<li class="active">Add Packages</li>
-		<li>Event Details</li>
-		<li>Add Invited People</li>
-	</ul>
-	<!-- fieldsets -->
-	<fieldset>
-		<h2 class="fs-title">Add Packages</h2>
-		<h3 class="fs-subtitle">This is step 1</h3>
-		<button id="addEvent" class="action-button">Add Packages</button>
-		<input type="text" name="fname" placeholder="First Name" />
-		<input type="text" name="lname" placeholder="Last Name" />
-		<input type="text" name="phone" placeholder="Phone" />
-		<textarea name="address" placeholder="Address"></textarea>
-		<input type="button" name="previous" class="previous action-button" value="Previous" />
-		<input type="button" name="next" class="next action-button" value="Next" />
-	</fieldset>
+<a href="/kts-admin/home">back</a>
+<form action="/kts-admin/event/<%= event._id.toString() %>/package" method="get">
+	<button id="addEvent" class="action-button">Add Packages</button>
+	<br>
+</form>
 
-	<fieldset>
-		<h2 class="fs-title">Event Details</h2>
-		<h3 class="fs-subtitle">This is step 2</h3>
-		<input type="text" name="eventTitle" placeholder="Event Title" />
-		<input type="text" name="eventDescription" placeholder="Event Description" />
-		<input type="button" name="next" class="next action-button" value="Next" />
-	</fieldset>
+<% if(Packages.packages.length> 0) { %>
+	<% for(let i=0; i < Packages.packages.length; i++){ %>
+		<h1>
+			<a href="/kts-admin/<%= event._id.toString() %>/package/<%=Packages.packages[i]._id.toString() %>">
+				<%=Packages.packages[i].title %>
 
-</div>
+			</a>
+		</h1>
+		<% } %>
+			<% } %>
