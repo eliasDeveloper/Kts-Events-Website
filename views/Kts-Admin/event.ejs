@@ -7,9 +7,10 @@
 <% if(Packages.packages.length> 0) { %>
 	<% for(let i=0; i < Packages.packages.length; i++){ %>
 		<h1>
-			<%=Packages.packages[i].title %>
-				<%=Packages.packages[i].description %>
-					<%=Packages.packages[i].price %>
+			<a href="/kts-admin/<%= event._id.toString() %>/package/<%=Packages.packages[i]._id.toString() %>">
+				<%=Packages.packages[i].title %>
+
+			</a>
 		</h1>
 		<% } %>
 			<% } %>

@@ -5,23 +5,17 @@ const path = require('path')
 const mongoose = require('mongoose')
 const methodOverride = require("method-override");
 const expressLayouts = require('express-ejs-layouts')
-const Package = require('./models/kts-admin/package')
-const Event = require('./models/kts-admin/event')
 const User = require('./models/kts-admin/user')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const verify = require('./middleware/verifyToken')
 const cookieParser = require('cookie-parser')
 const nodemailer = require('nodemailer')
+const adminRoute = require('./routes/kts-admin')
 require('dotenv').config()
 
 // database connection conf
-// mongoose.connect("mongodb+srv://rhino11:rhino11@cluster0.wz45u.mongodb.net/KTS-DB?retryWrites=true&w=majority", {
-// 	useNewUrlParser: true,
-// 	useUnifiedTopology: true,
-// });
-
-mongoose.connect("mongodb://localhost:27017/KtsWeb", {
+mongoose.connect("mongodb+srv://rhino11:rhino11@cluster0.wz45u.mongodb.net/KTS-DB?retryWrites=true&w=majority", {
 	useNewUrlParser: true,
 	useUnifiedTopology: true,
 });
@@ -49,6 +43,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(methodOverride("_method"));
 app.use(cookieParser())
+app.use('/kts-admin', adminRoute)
 
 
 //landing pages routing
@@ -71,63 +66,13 @@ app.get('/register', (req, res) => {
 app.get('/login', (req, res) => {
 	res.render('Landing-Pages/login', { layout: "./layouts/login-layout", title: "Login" })
 })
+
 app.get('/welcome', (req, res) => {
-	if(req.cookies.token)
-	res.render('Landing-Pages/welcome', { layout: "./layouts/welcome-layout", title: "Welcome!!" })
-	else{
-	res.redirect('login')
+	if (req.cookies.token)
+		res.render('Landing-Pages/welcome', { layout: "./layouts/welcome-layout", title: "Welcome!!" })
+	else {
+		res.redirect('login')
 	}
-})
-//end of landing pages routing
-
-
-//start of admin routes
-app.get('/kts-admin/home', async (req, res) => {
-	const events = await Event.find({})
-	res.render('Kts-Admin/home', { events, layout: "./layouts/admin-layout", title: "Admin - Home" })
-})
-
-//event owner add page
-app.get('/kts-admin/new-event', (req, res) => {
-	res.render('Kts-Admin/event-owner', { layout: "./layouts/admin-layout", title: "Admin - New Event" })
-})
-
-//post the owner for a new event and go to fill the event with the needed data
-app.post('/kts-admin/event', async (req, res) => {
-	const { email } = req.body
-	const newEvent = new Event({ owner: `${email}` })
-	await newEvent.save().then(res => { console.log(`success to post event owner`) }).catch(err => { console.log(err) })
-	const id = newEvent._id.toString()
-	res.redirect(`/kts-admin/event/${id}`)
-})
-//end of add event owner logic to an event
-
-//start of add needed data and package for a specific event
-app.get('/kts-admin/event/:id', async (req, res) => {
-	const { id } = req.params
-	let event = await Event.findById(id)
-	let Packages = await event.populate('packages')
-	console.log(`ayre b yahouwaza ${Packages}`)
-	res.render('Kts-Admin/event', { layout: "./layouts/admin-layout", title: "Event", event, id, Packages })
-})
-
-// start of add package go to add a package related to the event
-app.get('/kts-admin/event/:id/package', async (req, res) => {
-	const { id } = req.params
-	res.render('Kts-Admin/package', { layout: "./layouts/test", title: "package", id })
-})
-//end of add package
-
-//returns with the package added concerning the specific event
-app.post('/kts-admin/event/:id/add-package', async (req, res) => {
-	const { id } = req.params
-	let event = await Event.findById(id)
-	const newPackage = req.body
-	let addedPackage = new Package({ title: newPackage.title, description: newPackage.description, price: newPackage.price })
-	await addedPackage.save()
-	event.packages.push(addedPackage._id)
-	await event.save()
-	res.redirect(`/kts-admin/event/${id}`)
 })
 
 
@@ -162,7 +107,7 @@ app.post('/api/user/register', async (req, res) => {
 app.post('/login', async (req, res) => {
 	res.clearCookie("token");
 	const { error } = schema.validate(req.body)
-	if(error){
+	if (error) {
 		return res.status(400).send(error.details[0].message)
 	}
 	const { email, password } = req.body
@@ -184,12 +129,12 @@ app.post('/logout', (req, res) => {
 	res.redirect('/login')
 })
 
-app.get('/welcome',verify, (req, res) => {
-	 if (!req.cookies.token) {
-	 	return res.redirect('login')
+app.get('/welcome', verify, (req, res) => {
+	if (!req.cookies.token) {
+		return res.redirect('login')
 	}
-	else{
-	 return res.redirect('welcome')
+	else {
+		return res.redirect('welcome')
 	}
 })
 
@@ -230,7 +175,7 @@ app.post('/subscribe', (req, res) => {
 		from: process.env.EMAIL,
 		to: 'codebookinc@gmail.com, fady.chebly1@gmail.com',
 		subject: 'Email Newsletter Subscription Request',
-		text: 'Dear KTS Administration Team,\n\n\nKindly approve & accept the request for the subscription of this email,\n' +req.body.email +'\nin order to complete the subscription to your Email Newsletter. \n \n \n \n' +'Thank you & Best Regards'
+		text: 'Dear KTS Administration Team,\n\n\nKindly approve & accept the request for the subscription of this email,\n' + req.body.email + '\nin order to complete the subscription to your Email Newsletter. \n \n \n \n' + 'Thank you & Best Regards'
 	};
 	transporter.sendMail(mailOptions, (err, res) => {
 		if (err) {
