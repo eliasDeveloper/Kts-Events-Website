@@ -9,6 +9,7 @@ const User = require('./models/kts-admin/user')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const verify = require('./middleware/verifyToken')
+const {Users} = require('./middleware/fetchFromCSV')
 const cookieParser = require('cookie-parser')
 const nodemailer = require('nodemailer')
 const adminRoute = require('./routes/kts-admin')
@@ -63,7 +64,9 @@ app.get('/contact', (req, res) => {
 app.get('/login', (req, res) => {
 	res.render('Landing-Pages/login', { layout: "./layouts/login-layout", title: "Login" })
 })
-
+app.get('/password-grant', (req, res) => {
+	res.render('Landing-Pages/password-grant', { layout: "./layouts/login-layout", title: "Password Grant" })
+})
 app.post('/login', async (req, res) => {
 	res.clearCookie("token");
 	const { error } = schema.validate(req.body)
@@ -122,63 +125,28 @@ app.post('/api/user/register', async (req, res) => {
 	}
 })
 
+app.post('/login', async (req, res) => {
+	res.clearCookie("token");
+	const { error } = schema.validate(req.body)
+	if (error) {
+		return res.status(400).send(error.details[0].message)
+	}
+	const { email, password } = req.body
+	const user = await User.findOne({ email })
+	//console.log(user)
+	if (!user) {
+		return res.status(400).send('failed login: invalid credentials')
+	}
+	const validPass = await bcrypt.compare(password, user.password)
+	if (!validPass) {
+		return res.status(400).send('failed login: invalid credentials')
+	}
 
-app.post('/password-grant', async (req, res) => {
-	let emails = []
-	let chars = "0123456789abcdefghijklmnopqrstuvwxyz!@#$%&*ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-	const passwordLength = 12;
-	let transporter = nodemailer.createTransport({
-		service: 'gmail',
-		auth: {
-			user: process.env.EMAIL,
-			pass: process.env.PASSWORD
-		}
-	});
-	fs.createReadStream('sample_data.csv')
-		.pipe(csv())
-		.on('data', (row) => emails.push(row.Emails))
-		.on('end', () => {
-			for (let i = 0; i < emails.length; i++) {
-				password = "";
-				for (let j = 0; j <= passwordLength; j++) {
-					randomNumber = Math.floor(Math.random() * chars.length);
-					password += chars.substring(randomNumber, randomNumber + 1);
-				}
-				var mailOptions = {
-					from: process.env.EMAIL,
-					to: emails[i].toString(),
-					subject: 'Password Granted',
-					text: 'Dear Client, your granted password is: ' + password
-				};
-				//Checking if the user is already in the db
-				const emailExist = User.findOne({ email: emails[i].toString() })
-				if (emailExist) {
-					console.log('email already exists')
-				}
-				//Create a new User
-				else {
-					transporter.sendMail(mailOptions, (err) => {
-						if (err) {
-							console.log(err);
-						}
-						else {
-							console.log('success')
-						}
-					});
-					const user = new User({
-						name: 'test',
-						email: emails[i],
-						password: password,
-						isAdmin: 0
-					})
-					try {
-						user.save()
-					} catch (err) {
-						console.log(err)
-					}
-				}
-			}
-		})
+	const token = jwt.sign({ user }, process.env.TOKEN_SECRET_KEY, { expiresIn: '24h' })
+	res.cookie('token', token.toString())
+	if (user.isAdmin === 0) { res.redirect('/welcome') }
+	else if (user.isAdmin === 1) { res.redirect('/') }
+	else if (user.isAdmin === 2) { res.redirect('/contact') }
 })
 
 app.post('/logout', (req, res) => {
@@ -194,7 +162,45 @@ app.get('/welcome', verify, (req, res) => {
 		return res.redirect('welcome')
 	}
 })
-
+app.post('/password-grant', async (req, res) => {
+    let transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: process.env.EMAIL,
+            pass: process.env.PASSWORD
+        }
+    });
+	let hashPassword
+	for(let i=0; i< Users.length; i++){
+		hashPassword = null
+		var mailOptions = {
+			from: process.env.EMAIL,
+			to: Users[i].email.toString(),
+			subject: 'Password Granted',
+			text: 'Dear Client ' +Users[i].email.toString() +', your granted password is: ' + Users[i].password.toString()
+		};
+		let salt = await bcrypt.genSalt(10)
+		hashPassword= await bcrypt.hash(Users[i].password, salt)
+		Users[i].password = hashPassword
+		Users[i].isAdmin = 0
+		let emailExist = await User.findOne({ email: Users[i].email.toString() })
+		if(emailExist){
+			console.log(Users[i].email + ' exists already')
+		}
+		else{
+		let savedUser = await Users[i].save()
+		transporter.sendMail(mailOptions, (err, res) => {
+			if (err) {
+				console.log(err);
+			}
+			else {
+				console.log('success')
+			}
+		});
+	}
+}
+res.redirect('/password-grant')
+})
 app.post('/contact', (req, res) => {
 	let transporter = nodemailer.createTransport({
 		service: 'gmail',
