@@ -1,6 +1,20 @@
-<form action="/kts-admin/event/<%= id %>/package" method="post">
-	<input type="text" name="title">
-	<input type="text" name="description">
-	<input type="number" name="price">
-	<button>submit</button>
-</form>
+<% if(hasPackage){ %>
+	<form action="/kts-admin/<%= id %>/package/<%= packageId %>" method="post">
+		<input type="text" name="title" value="<%= package.title %> ">
+		<input type="text" name="description" value="<%= package.description %>">
+		<input type="number" name="price" value="<%= package.price %>">
+		<button>submit</button>
+	</form>
+	<form action="/kts-admin/delete/package/<%=packageId%>/event/<%= id %>?_method=DELETE" method="POST">
+		<button class="btn btn-danger">Delete</button>
+	</form>
+	<%} else{ %>
+		<form action="/kts-admin/event/<%= id %>/package" method="post">
+			<input type="text" name="title">
+			<input type="text" name="description">
+			<input type="number" name="price">
+			<button>submit</button>
+		</form>
+		<%} %>
+
+			<a href="/kts-admin/event/<%= id %> " class="btn btn-warning">back</a>
