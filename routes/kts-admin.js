@@ -20,9 +20,21 @@ router.post('/event', async (req, res) => {
 	const newEvent = new Event({ owner: `${email}` })
 	await newEvent.save().then(res => { console.log(`success to post event owner`) }).catch(err => { console.log(err) })
 	const id = newEvent._id.toString()
-	res.redirect(`/kts-admin/event/${id}`)
+	res.redirect(`/kts-admin/event/${id}/details`)
 })
-//end of add event owner logic to an event
+
+router.get('/event/:eventid/details', (req, res) => {
+	const { eventid } = req.params
+	res.render('Kts-Admin/event-details', { layout: "./layouts/admin-layout", title: "Admin - Event Details", eventid })
+})
+
+router.post('/event/:eventid/details', async (req, res) => {
+	const { eventid } = req.params
+	await Event.findByIdAndUpdate({ _id: eventid }, req.body)
+	const savedEvent = await Event.findById(eventid)
+	console.log(`added title and description ${savedEvent}`)
+	res.redirect(`/Kts-Admin/event/${eventid}`)
+})
 
 //start of add needed data and package for a specific event
 router.get('/event/:id', async (req, res) => {
@@ -53,5 +65,43 @@ router.post('/event/:id/package', async (req, res) => {
 	res.redirect(`/kts-admin/event/${id}`)
 })
 
+router.get('/:id/package/:packageId', async (req, res) => {
+	const { packageId } = req.params
+	const { id } = req.params
+	let package = await Package.findById(packageId)
+	res.render('Kts-Admin/package', { layout: "./layouts/admin-layout", title: "Edit Package", id, hasPackage: true, package, packageId })
+})
+
+router.post('/:id/package/:packageId', async (req, res) => {
+	const { packageId } = req.params
+	const { id } = req.params
+	await Package.findByIdAndUpdate({ _id: packageId }, req.body)
+	res.redirect(`/kts-admin/event/${id}`)
+})
+
+router.delete('/delete/package/:packageid/event/:eventId', async (req, res) => {
+	const { packageid } = req.params
+	const { eventId } = req.params
+	await Package.findByIdAndDelete(packageid)
+	await Event.findById(eventId)
+	res.redirect(`/kts-admin/event/${eventId}`)
+})
+
+router.delete('/delete/event/:eventid', async (req, res) => {
+	const { eventid } = req.params
+	console.log(eventid)
+	const deleteEvent = await Event.findByIdAndDelete(eventid)
+	console.log(deleteEvent)
+	res.redirect('/kts-admin/home')
+})
+
+
+router.post('/SaveEvent/:eventid', async (req, res) => {
+	const { eventid } = req.params
+	await Event.findByIdAndUpdate({ _id: eventid }, req.body)
+	const savedEvent = await Event.findById(eventid)
+	console.log(savedEvent)
+	res.redirect('/kts-admin/home')
+})
 
 module.exports = router
