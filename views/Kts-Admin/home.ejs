@@ -20,21 +20,25 @@
 				</thead>
 				<tbody>
 					<% for(let i=0; i < events.length ; i++){ %>
+
 						<tr>
 							<th scope="row">
-								<%= i+1 %>
+								<a href="/kts-admin/event/<%= events[i]._id.toString() %> ">
+
+									<%= i+1 %>
+								</a>
 							</th>
 							<td>
 								<%= events[i].owner %>
 							</td>
 							<td>
-								<%= events[i].description %>
+								<%= events[i].title %>
 							</td>
 							<td>
 								<%= events[i].dateOfCreation %>
 							</td>
-						</tr>
 
+						</tr>
 						<% } %>
 
 				</tbody>

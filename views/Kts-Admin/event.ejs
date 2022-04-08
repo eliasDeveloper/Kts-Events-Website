@@ -3,7 +3,20 @@
 	<button id="addEvent" class="action-button">Add Packages</button>
 	<br>
 </form>
+<form action="/kts-admin/SaveEvent/<%= event._id.toString() %>" method="post">
+	<% if(event.title){ %>
+		<input type="text" placeholder="title" name="title" value="<%= event.title %> ">
+		<% } else{ %>
+			<input type="text" placeholder="title" name="title">
+			<% }%>
+				<% if(event.description){ %>
+					<input type="text" placeholder="description" name="description" value="<%= event.description %> ">
+					<% } else{ %>
+						<input type="text" placeholder="description" name="description">
+						<%} %>
 
+							<button class="btn btn-success">Save</button>
+</form>
 <% if(Packages.packages.length> 0) { %>
 	<% for(let i=0; i < Packages.packages.length; i++){ %>
 		<h1>
@@ -14,3 +27,7 @@
 		</h1>
 		<% } %>
 			<% } %>
+
+				<form action="/kts-admin/delete/event/<%= event._id.toString() %>?_method=DELETE" method="post">
+					<button class="btn btn-danger">delete</button>
+				</form>
