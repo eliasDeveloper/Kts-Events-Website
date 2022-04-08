@@ -42,7 +42,7 @@ router.get('/event/:id', async (req, res) => {
 	let event = await Event.findById(id)
 	let Packages = await event.populate('packages')
 	console.log(`ayre b yahouwaza ${Packages}`)
-	res.render('Kts-Admin/event', { layout: "./layouts/test", title: "Event", event, id, Packages })
+	res.render('Kts-Admin/event', { layout: "./layouts/admin-layout", title: "Event", event, id, Packages })
 })
 
 // start of add package go to add a package related to the event
