@@ -1,6 +1,14 @@
-<form action="/kts-admin/event" method="post">
-	<h2 class="fs-title">Create Event Owner Account</h2>
-	<input type="text" name="email" placeholder="Email" />
-	<button>submit</button>
-	<a href="/kts-admin/home">back</a>
-</form>
+<div class="container">
+	<h2 class="fs-title text-center h2 center-element">Insert Event Owner Account</h2>
+	<div class="row">
+		<div class="col-md-6 center-element">
+			<form class="form-group" action="/kts-admin/event" method="post">
+				<input type="text" class="form-control margin-element" name="email" placeholder="Email" />
+				<div class="col-md-6 center-element">
+					<button class="btn btn-success center-element">submit</button>
+					<a href="/kts-admin/home" class="btn btn-warning center-element">back</a>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
