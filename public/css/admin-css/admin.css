@@ -1,0 +1,52 @@
+table {
+	border-spacing: 0px;
+	width: 100%;
+}
+
+.table td,
+.table th {
+	padding: .75em;
+	vertical-align: top;
+	text-align: center;
+	border-top: 1px solid var(--border);
+}
+
+.table td>a.btn {
+	padding: .3em 1em;
+	font-size: 1.1em;
+	margin: 0 .2em;
+}
+
+
+.table tr:hover td>a {
+	box-shadow: none;
+}
+
+.table .thead-dark th {
+	color: #fff;
+	background-color: var(--dark);
+	border-color: #32383e;
+}
+
+.center-element {
+	margin: auto;
+}
+
+.form-control {
+	border: none;
+	height: 50px;
+	color: white !important;
+	border: 1px solid transparent;
+	background: rgba(255, 255, 255, 0.08);
+	border-radius: 40px;
+	padding-left: 20px;
+	padding-right: 20px;
+	-webkit-transition: 0.3s;
+	-o-transition: 0.3s;
+	transition: 0.3s;
+	width: 100%;
+}
+
+.margin-element {
+	margin: 2em 0;
+}
