@@ -3,12 +3,12 @@
 	<div class="row">
 		<div class="col-md-12 col-sm-12">
 			<table class="table table-hover">
-				<thead>
+				<thead class="thead-dark">
 					<tr>
 						<th scope="col">#</th>
 						<th scope="col">Event Owner</th>
 						<th scope="col">Event Name</th>
-						<th scope="col">Date Of Creation</th>
+						<th scope="col">Action</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -16,10 +16,7 @@
 
 						<tr>
 							<th scope="row">
-								<a href="/kts-admin/event/<%= events[i]._id.toString() %> ">
-
-									<%= i+1 %>
-								</a>
+								<%= i+1 %>
 							</th>
 							<td>
 								<%= events[i].owner %>
@@ -28,7 +25,17 @@
 								<%= events[i].title %>
 							</td>
 							<td>
-								<%= events[i].dateOfCreation %>
+								<a style="display: inline-block;"
+									href="/kts-admin/event/<%= events[i]._id.toString() %>"
+									class="btn border-shadow update">
+									<span class="text-gradient"><i class="fas fa-pencil-alt"></i></span>
+								</a>
+								<form style="display: inline-block;"
+									action="/kts-admin/delete/event/<%= events[i]._id.toString() %>?_method=DELETE"
+									method="post">
+									<button class="btn border-shadow delete"><span class="text-gradient"><i
+												class="fas fa-times"></i></span></button>
+								</form>
 							</td>
 
 						</tr>
@@ -38,14 +45,6 @@
 			</table>
 		</div>
 	</div>
-
-	<!-- <nav aria-label="Page navigation example" style="margin-bottom: 3em;">
-		<ul class="pagination justify-content-center">
-			<li class="page-item"><a class="page-link" href="#">1</a></li>
-			<li class="page-item"><a class="page-link" href="#">2</a></li>
-			<li class="page-item"><a class="page-link" href="#">3</a></li>
-		</ul>
-	</nav> -->
 
 	<div class="row" style="margin-top: 3em;">
 		<div class="col-sm-6 col-md-6">
