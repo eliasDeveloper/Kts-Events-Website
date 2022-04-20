@@ -2,13 +2,6 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
 const userSchema = new Schema({
-
-	name: {
-		type: String,
-		required: false,
-		min: 6,
-		max: 200
-	},
 	email: {
 		type: String,
 		required: [true, 'Username cant be blank'],
