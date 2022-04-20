@@ -5,21 +5,14 @@ const EventSchema = new Schema({
 
 	owner: {
 		type: String,
-		// required: true
 	},
 	title: {
 		type: String,
-		// required: true
 	},
 	description: {
 		type: String,
-		// required: true
 	},
-	packages: [{ type: Schema.Types.ObjectId, ref: 'Package' }],
-	dateOfCreation: {
-		type: Date,
-		// default: date()
-	}
+	packages: [{ type: Schema.Types.ObjectId, ref: 'Package' }]
 
 })
 
