@@ -1,11 +1,15 @@
 const jwt = require('jsonwebtoken')
+const NodeCache = require("node-cache");
+const myCache = new NodeCache();
 require('dotenv').config()
 
 module.exports = function (req, res, next) {
-	const token = req.cookies.token//req.headers['authorization']
 
+	const token = req.cookies.token//req.headers['authorization']
+	let cachedToken = myCache.get('token')
+	console.log('hello', cachedToken)
 	//localStorage.setItem('access_token', token)
-	if (typeof token === 'undefined' || !token) return res.status(401).send('Access Denied')
+	if (typeof token === 'undefined' || !token || token !== cachedToken) return res.status(401).send('Access Denied')
 
 	try {
 		const bearer = token.split(' ')
