@@ -245,6 +245,16 @@ app.get('/invited-individual', verify, (req, res) => {
 	res.send('welcome to invited individual page')
 })
 
+app.all('*', (req, res, next) => {
+	next(new ExpressError('Page Not Found', 404))
+})
+
+app.use((err, req, res, next) => {
+	const { statusCode = 500 } = err;
+	if (!err.message) err.message = 'Oh No, Something Went Wrong!'
+	res.status(statusCode).render('error', { title: "Error", err })
+})
+
 app.listen(port, () => {
 	console.log(`Listening on port ${port}`)
 })
