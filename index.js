@@ -7,6 +7,9 @@ const app = express()
 const connection = require('./db')
 const port = 3000
 const path = require('path')
+const ExpressError = require('./utils/ExpressError');
+const session = require('express-session');
+const flash = require('connect-flash');
 const methodOverride = require("method-override");
 const expressLayouts = require('express-ejs-layouts')
 const User = require('./models/kts-admin/user')
@@ -203,6 +206,16 @@ app.get('/event-owner', verify, (req, res) => {
 
 app.get('/invited-individual', verify, (req, res) => {
 	res.send('welcome to invited individual page')
+})
+
+app.all('*', (req, res, next) => {
+	next(new ExpressError('Page Not Found', 404))
+})
+
+app.use((err, req, res, next) => {
+	const { statusCode = 500 } = err;
+	if (!err.message) err.message = 'Oh No, Something Went Wrong!'
+	res.status(statusCode).render('error', { title: "Error", err })
 })
 
 app.listen(port, () => {

@@ -1,5 +1,17 @@
-<form action="/kts-admin/event/<%= eventid %>/details" method="post">
-	<input type="text" placeholder="title" name="title">
-	<input type="text" placeholder="description" name="description">
-	<button class="btn btn-success">Save</button>
-</form>
+<div class="box">
+	<h2 class="header_two">Add Event Details</h2>
+	<div class="row">
+		<div class="col-md-12 center-element">
+			<form class="form-group" action="/kts-admin/event/<%= eventid %>/details" method="post">
+				<input class="form-control margin-element" type="text" placeholder="Title" name="title">
+				<textarea class="form-control margin-element" rows="5" cols="50" placeholder="Description"
+					name="description"></textarea>
+				<div class="col-md-12 display-flex-column">
+					<button class="button">Submit</button>
+					<a href="/kts-admin/event/<%= eventid %>" class=" button btn-alert">Skip For Now</a>
+					<a href="/kts-admin/home" class="button">Back</a>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
