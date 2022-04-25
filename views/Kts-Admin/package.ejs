@@ -1,22 +1,31 @@
-<% if(hasPackage){ %>
-	<form action="/kts-admin/<%= id %>/package/<%= packageId %>" method="post">
-		<input type="text" name="title" value="<%= package.title %> ">
-		<input type="text" name="description" value="<%= package.description %>">
-		<input type="number" name="price" value="<%= package.price %>">
-		<button>submit</button>
-	</form>
-	<form action="/kts-admin/delete/package/<%=packageId%>/event/<%= id %>?_method=DELETE" method="POST">
-		<button class="btn btn-danger">Delete</button>
-	</form>
-	<%} else{ %>
-		<form action="/kts-admin/event/<%= id %>/package" method="post" novalidate class="validated-form"
-			enctype="multipart/form-data">
-			<input type="file" name="image">
-			<input type="text" name="title" placeholder="title">
-			<input type=" text" name="description" placeholder="description">
-			<input class="form-control" type="number" name="price" placeholder="price">
-			<button>submit</button>
+<div class="box">
+	<h2 class="header_two">Package Details</h2>
+	<% if(hasPackage){ %>
+		<form action="/kts-admin/<%= id %>/package/<%= packageId %>" method="post">
+			<input type="text" class="form-control margin-element" name="title" value="<%= package.title %> ">
+			<textarea class="form-control margin-element" type="text" name="description" cols="50"
+				rows="5"><%= package.description %></textarea>
+			<input class="form-control margin-element" type="number" name="price" value="<%= package.price %>">
+			<button class="button" style="width: 100%;">Submit</button>
 		</form>
-		<%} %>
+		<form action="/kts-admin/delete/package/<%=packageId%>/event/<%= id %>?_method=DELETE" method="POST">
+			<button class="button" style="width: 100%;">Delete</button>
+		</form>
+		<%} else{ %>
+			<form action="/kts-admin/event/<%= id %>/package" method="post" novalidate class="validated-form"
+				enctype="multipart/form-data">
+				<input class="form-control margin-element" type="text" name="title" placeholder="Title">
+				<textarea type=" text" name="description" placeholder="Description" class="form-control margin-element"
+					rows="5" cols="50"></textarea>
+				<input class="form-control margin-element" type="number" name="price" placeholder="Price">
+				<input class="form-control margin-element" type="file" name="image">
+				<div class="display-flex-column col-md-12">
+					<button class="button" style="width: 100%;">Submit</button>
+				</div>
+			</form>
+			<%} %>
+				<div class="display-flex-column col-md-12">
+					<a href="/kts-admin/event/<%= id %> " class="button" style="width: 100%;">Back</a>
+				</div>
 
-			<a href="/kts-admin/event/<%= id %> " class="btn btn-warning">back</a>
+</div>
