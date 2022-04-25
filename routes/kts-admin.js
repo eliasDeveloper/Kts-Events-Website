@@ -13,7 +13,7 @@ router.get('/home', async (req, res) => {
 
 //event owner add page
 router.get('/new-event', (req, res) => {
-	res.render('Kts-Admin/event-owner', { layout: "./layouts/admin-layout", title: "Admin - New Event" })
+	res.render('Kts-Admin/event-owner', { layout: "./layouts/Admin/event", title: "Admin - New Event" })
 })
 
 //post the owner for a new event and go to fill the event with the needed data
@@ -28,7 +28,7 @@ router.post('/event', async (req, res) => {
 router.route('/event/:eventid/details')
 	.get((req, res) => {
 		const { eventid } = req.params
-		res.render('Kts-Admin/event-details', { layout: "./layouts/admin-layout", title: "Admin - Event Details", eventid })
+		res.render('Kts-Admin/event-details', { layout: "./layouts/Admin/event", title: "Admin - Event Details", eventid })
 	})
 	.post(async (req, res) => {
 		const { eventid } = req.params
@@ -46,13 +46,13 @@ router.get('/event/:id', async (req, res) => {
 	let event = await Event.findById(id)
 	let Packages = await event.populate('packages')
 	console.log(`ayre b yahouwaza ${Packages}`)
-	res.render('Kts-Admin/event', { layout: "./layouts/admin-layout", title: "Event", event, id, Packages })
+	res.render('Kts-Admin/event', { layout: "./layouts/Admin/event", title: "Event", event, id, Packages })
 })
 
 router.route('/event/:id/package')
 	.get((req, res) => {
 		const { id } = req.params
-		res.render('Kts-Admin/package', { layout: "./layouts/admin-layout", title: "package", id, hasPackage: false })
+		res.render('Kts-Admin/package', { layout: "./layouts/Admin/event", title: "package", id, hasPackage: false })
 	})
 	.post(upload.single('image'), async (req, res) => {
 		const { id } = req.params
@@ -74,7 +74,7 @@ router.get('/:id/package/:packageId', async (req, res) => {
 	const { packageId } = req.params
 	const { id } = req.params
 	let package = await Package.findById(packageId)
-	res.render('Kts-Admin/package', { layout: "./layouts/admin-layout", title: "Edit Package", id, hasPackage: true, package, packageId })
+	res.render('Kts-Admin/package', { layout: "./layouts/Admin/event", title: "Edit Package", id, hasPackage: true, package, packageId })
 })
 
 router.post('/:id/package/:packageId', async (req, res) => {
