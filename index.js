@@ -7,23 +7,33 @@ const app = express()
 const connection = require('./db')
 const port = 3000
 const path = require('path')
+
+const session = require('express-session');
+const flash = require('connect-flash');
+const ExpressError = require('./utils/ExpressError');
+const passport = require('passport');
+const LocalStrategy = require('passport-local');
+const User = require('./models/kts-admin/user')
+
 const methodOverride = require("method-override");
 const expressLayouts = require('express-ejs-layouts')
-const User = require('./models/kts-admin/user')
-const bcrypt = require('bcryptjs')
-const jwt = require('jsonwebtoken')
+
 const verify = require('./middleware/verifyToken')
 const { Users } = require('./middleware/fetchFromCSV')
-const cookieParser = require('cookie-parser')
 const nodemailer = require('nodemailer')
+
+
+
+//dispose
+const bcrypt = require('bcryptjs')
+const jwt = require('jsonwebtoken')
+const cookieParser = require('cookie-parser')
 const NodeCache = require("node-cache");
 const myCache = new NodeCache();
 
-
-
 //Routes
 const adminRoute = require('./routes/kts-admin')
-
+const userRoutes = require('./routes/users');
 
 //db connection
 connection()
@@ -45,8 +55,38 @@ app.use(express.json());
 app.use(methodOverride("_method"));
 app.use(cookieParser())
 
-app.use('/kts-admin', adminRoute)
 
+//reorganise !!session conf for passport
+const sessionConfig = {
+	secret: 'thisshouldbeabettersecret!',
+	resave: false,
+	saveUninitialized: true,
+	cookie: {
+		httpOnly: true,
+		expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
+		maxAge: 1000 * 60 * 60 * 24 * 7
+	}
+}
+
+app.use(session(sessionConfig))
+app.use(flash());
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new LocalStrategy(User.authenticate()));
+
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
+app.use((req, res, next) => {
+	console.log(req.session)
+	res.locals.currentUser = req.user;
+	res.locals.success = req.flash('success');
+	res.locals.error = req.flash('error');
+	next();
+})
+
+app.use('/', userRoutes);
+app.use('/kts-admin', adminRoute)
 
 //landing pages routing
 app.get('/', (req, res) => {
