@@ -9,11 +9,20 @@
 # 	"isAdmin": 0
 # }
 
-POST http://localhost:3000/login
+# POST http://localhost:3000/login
+# Content-Type: application/json
+
+# {
+# 	"email": "elias@gmail.com",
+# 	"password":"Tanous1258"
+# }
+
+POST http://localhost:3000/register
 Content-Type: application/json
 
 {
-	"email": "elias@gmail.com",
-	"password":"Tanous1258"
+	"email": "elias22@gmail.com",
+	"username":"elias22@gmail.com",
+	"password":"ayre",
+	"isAdmin": 2
 }
-

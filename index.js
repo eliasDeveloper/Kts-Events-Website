@@ -7,42 +7,24 @@ const app = express()
 const connection = require('./db')
 const port = 3000
 const path = require('path')
-
-const session = require('express-session');
 const flash = require('connect-flash');
-const ExpressError = require('./utils/ExpressError');
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
+const session = require('express-session');
+const ExpressError = require('./utils/ExpressError');
 const User = require('./models/kts-admin/user')
-
 const methodOverride = require("method-override");
 const expressLayouts = require('express-ejs-layouts')
 
-const verify = require('./middleware/verifyToken')
+const { isEventOwner, isInvited } = require('./middleware/loggedIn')
 const { Users } = require('./middleware/fetchFromCSV')
 const nodemailer = require('nodemailer')
-
-
-
-//dispose
-const bcrypt = require('bcryptjs')
-const jwt = require('jsonwebtoken')
-const cookieParser = require('cookie-parser')
-const NodeCache = require("node-cache");
-const myCache = new NodeCache();
 
 //Routes
 const adminRoute = require('./routes/kts-admin')
 const userRoutes = require('./routes/users');
-
 //db connection
 connection()
-
-const Joi = require('@hapi/joi');
-const schema = Joi.object({
-	email: Joi.string().min(6).required().email(),
-	password: Joi.string().min(6).required()
-});
 
 app.set('view engine', 'ejs')
 app.set('views', path.join(__dirname, '/views'))
@@ -53,7 +35,6 @@ app.use(express.static(path.join(__dirname, "/public")));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(methodOverride("_method"));
-app.use(cookieParser())
 
 
 //reorganise !!session conf for passport
@@ -70,6 +51,7 @@ const sessionConfig = {
 
 app.use(session(sessionConfig))
 app.use(flash());
+
 app.use(passport.initialize());
 app.use(passport.session());
 passport.use(new LocalStrategy(User.authenticate()));
@@ -88,18 +70,6 @@ app.use((req, res, next) => {
 app.use('/', userRoutes);
 app.use('/kts-admin', adminRoute)
 
-//landing pages routing
-app.get('/', (req, res) => {
-	res.render('Landing-Pages/home', { title: "KTS" })
-})
-
-app.get('/about', (req, res) => {
-	res.render('Landing-Pages/about', { title: "About" })
-})
-
-app.get('/contact', (req, res) => {
-	res.render('Landing-Pages/contact', { title: "Contact Us" })
-})
 
 app.post('/contact', (req, res) => {
 	let transporter = nodemailer.createTransport({
@@ -126,39 +96,6 @@ app.post('/contact', (req, res) => {
 	res.redirect('contact')
 })
 
-app.get('/login', (req, res) => {
-	res.render('Landing-Pages/login', { layout: "./layouts/login-layout", title: "Login" })
-})
-
-app.post('/login', async (req, res) => {
-	res.clearCookie("token");
-	const { error } = schema.validate(req.body)
-	if (error) {
-		return res.status(400).send(error.details[0].message)
-	}
-	const { email, password } = req.body
-	const user = await User.findOne({ email })
-	//console.log(user)
-	if (!user) {
-		return res.status(400).send('failed login: invalid credentials')
-	}
-	const validPass = await bcrypt.compare(password, user.password)
-	if (!validPass) {
-		return res.status(400).send('failed login: invalid credentials')
-	}
-
-	const token = jwt.sign({ user }, process.env.TOKEN_SECRET_KEY, { expiresIn: '24h' })
-	myCache.set("token", token.toString(), 10000)
-	res.cookie('token', token.toString())
-	if (user.isAdmin === 0) { res.redirect('/invited-individual') }
-	else if (user.isAdmin === 1) { res.redirect('/event-owner') }
-	else if (user.isAdmin === 2) { res.redirect('/kts-admin/home') }
-})
-
-app.post('/logout', (req, res) => {
-	res.clearCookie("token");
-	res.redirect('/login')
-})
 
 app.get('/password-grant', (req, res) => {
 	res.render('Landing-Pages/password-grant', { layout: "./layouts/login-layout", title: "Password Grant" })
@@ -204,13 +141,6 @@ app.post('/password-grant', async (req, res) => {
 	res.redirect('/password-grant')
 })
 
-app.post('/insert-user', async (req, res) => {
-	const data = req.body
-	let salt = await bcrypt.genSalt(10)
-	let hashPassword = await bcrypt.hash(data.password, salt)
-	let insertedUser = new User({ email: data.email, password: hashPassword, isAdmin: data.isAdmin })
-	await insertedUser.save()
-})
 
 app.post('/subscribe', (req, res) => {
 	let transporter = nodemailer.createTransport({
@@ -237,11 +167,11 @@ app.post('/subscribe', (req, res) => {
 	res.redirect('/')
 })
 
-app.get('/event-owner', verify, (req, res) => {
+app.get('/event-owner', isEventOwner, (req, res) => {
 	res.send('welcome to event owner')
 })
 
-app.get('/invited-individual', verify, (req, res) => {
+app.get('/invited-individual', isInvited, (req, res) => {
 	res.send('welcome to invited individual page')
 })
 

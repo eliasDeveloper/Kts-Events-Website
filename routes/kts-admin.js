@@ -5,19 +5,18 @@ const { storage, cloudinary } = require('../cloudinary')
 const upload = multer({ storage })
 const Package = require('../models/kts-admin/package')
 const Event = require('../models/kts-admin/event')
+const { isLoggedIn, isAdmin } = require('../middleware/loggedIn')
 
-router.get('/home', async (req, res) => {
+router.get('/home', isLoggedIn, isAdmin, async (req, res) => {
 	const events = await Event.find({})
 	res.render('Kts-Admin/home', { events, layout: "./layouts/admin-layout", title: "Admin - Home" })
 })
 
-//event owner add page
-router.get('/new-event', (req, res) => {
+router.get('/new-event', isLoggedIn, isAdmin, (req, res) => {
 	res.render('Kts-Admin/event-owner', { layout: "./layouts/Admin/event", title: "Admin - New Event" })
 })
 
-//post the owner for a new event and go to fill the event with the needed data
-router.post('/event', async (req, res) => {
+router.post('/event', isLoggedIn, isAdmin, async (req, res) => {
 	const { email } = req.body
 	const newEvent = new Event({ owner: `${email}` })
 	await newEvent.save().then(res => { console.log(`success to post event owner`) }).catch(err => { console.log(err) })
@@ -26,11 +25,11 @@ router.post('/event', async (req, res) => {
 })
 
 router.route('/event/:eventid/details')
-	.get((req, res) => {
+	.get(isLoggedIn, isAdmin, (req, res) => {
 		const { eventid } = req.params
 		res.render('Kts-Admin/event-details', { layout: "./layouts/Admin/event", title: "Admin - Event Details", eventid })
 	})
-	.post(async (req, res) => {
+	.post(isLoggedIn, isAdmin, async (req, res) => {
 		const { eventid } = req.params
 		await Event.findByIdAndUpdate({ _id: eventid }, req.body)
 		const savedEvent = await Event.findById(eventid)
@@ -38,10 +37,7 @@ router.route('/event/:eventid/details')
 		res.redirect(`/Kts-Admin/event/${eventid}`)
 	})
 
-
-
-//start of add needed data and package for a specific event
-router.get('/event/:id', async (req, res) => {
+router.get('/event/:id', isLoggedIn, isAdmin, async (req, res) => {
 	const { id } = req.params
 	let event = await Event.findById(id)
 	let Packages = await event.populate('packages')
@@ -50,11 +46,11 @@ router.get('/event/:id', async (req, res) => {
 })
 
 router.route('/event/:id/package')
-	.get((req, res) => {
+	.get(isLoggedIn, isAdmin, (req, res) => {
 		const { id } = req.params
 		res.render('Kts-Admin/package', { layout: "./layouts/Admin/event", title: "package", id, hasPackage: false })
 	})
-	.post(upload.single('image'), async (req, res) => {
+	.post(isLoggedIn, isAdmin, upload.single('image'), async (req, res) => {
 		const { id } = req.params
 		let event = await Event.findById(id)
 		const newPackage = req.body
@@ -70,21 +66,21 @@ router.route('/event/:id/package')
 	})
 
 
-router.get('/:id/package/:packageId', async (req, res) => {
+router.get('/:id/package/:packageId', isLoggedIn, isAdmin, async (req, res) => {
 	const { packageId } = req.params
 	const { id } = req.params
 	let package = await Package.findById(packageId)
 	res.render('Kts-Admin/package', { layout: "./layouts/Admin/event", title: "Edit Package", id, hasPackage: true, package, packageId })
 })
 
-router.post('/:id/package/:packageId', async (req, res) => {
+router.post('/:id/package/:packageId', isLoggedIn, isAdmin, async (req, res) => {
 	const { packageId } = req.params
 	const { id } = req.params
 	await Package.findByIdAndUpdate({ _id: packageId }, req.body)
 	res.redirect(`/kts-admin/event/${id}`)
 })
 
-router.delete('/delete/package/:packageid/event/:eventId', async (req, res) => {
+router.delete('/delete/package/:packageid/event/:eventId', isLoggedIn, isAdmin, async (req, res) => {
 	const { packageid } = req.params
 	const { eventId } = req.params
 	const deletedPackage = await Package.findById(packageid)
@@ -94,7 +90,7 @@ router.delete('/delete/package/:packageid/event/:eventId', async (req, res) => {
 	res.redirect(`/kts-admin/event/${eventId}`)
 })
 
-router.delete('/delete/event/:eventid', async (req, res) => {
+router.delete('/delete/event/:eventid', isLoggedIn, isAdmin, async (req, res) => {
 	const { eventid } = req.params
 	console.log(eventid)
 	const deleteEvent = await Event.findByIdAndDelete(eventid)
@@ -103,7 +99,7 @@ router.delete('/delete/event/:eventid', async (req, res) => {
 })
 
 
-router.post('/SaveEvent/:eventid', async (req, res) => {
+router.post('/SaveEvent/:eventid', isLoggedIn, isAdmin, async (req, res) => {
 	const { eventid } = req.params
 	await Event.findByIdAndUpdate({ _id: eventid }, req.body)
 	const savedEvent = await Event.findById(eventid)
