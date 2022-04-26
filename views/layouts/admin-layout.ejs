@@ -27,11 +27,12 @@
 
 <body>
 	<%- include('../partials/admin-partials/header.ejs') %>
-		<%- body %>
-			<script src="/javascript/landing-js/jquery-3.3.1.min.js"></script>
-			<script src="/javascript/landing-js/bootstrap.min.js"></script>
-			<script src="/javascript/landing-js/main.js"></script>
-			<script src="/javascript/landing-js/landing-functions.js"></script>
+		<%- include('../partials/common-partials/flash') %>
+			<%- body %>
+				<script src="/javascript/landing-js/jquery-3.3.1.min.js"></script>
+				<script src="/javascript/landing-js/bootstrap.min.js"></script>
+				<script src="/javascript/landing-js/main.js"></script>
+				<script src="/javascript/landing-js/landing-functions.js"></script>
 </body>
 
 </html>
