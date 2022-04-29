@@ -41,7 +41,7 @@ router.route('/login')
 	.post(passport.authenticate('local', { failureFlash: true, failureRedirect: '/login' }), (req, res) => {
 		req.flash('success', 'welcome back!');
 		const { isAdmin } = req.user
-		console.log(`ayre bel nabe ${isAdmin}`)
+		console.log(`${isAdmin}`)
 		let redirectUrl = req.session.returnTo || '/login';
 		if (isAdmin == 2) {
 			redirectUrl = req.session.returnTo || '/kts-admin/home';
