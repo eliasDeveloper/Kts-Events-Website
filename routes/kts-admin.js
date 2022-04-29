@@ -41,7 +41,7 @@ router.get('/event/:id', isLoggedIn, isAdmin, async (req, res) => {
 	const { id } = req.params
 	let event = await Event.findById(id)
 	let Packages = await event.populate('packages')
-	console.log(`ayre b yahouwaza ${Packages}`)
+	console.log(`${Packages}`)
 	res.render('Kts-Admin/event', { layout: "./layouts/Admin/event", title: "Event", event, id, Packages })
 })
 
@@ -59,7 +59,7 @@ router.route('/event/:id/package')
 		addedPackage.image_url = imagedetails.path
 		addedPackage.image_filename = imagedetails.filename
 		await addedPackage.save()
-		console.log(`ayre b setak ${addedPackage}`)
+		console.log(`${addedPackage}`)
 		event.packages.push(addedPackage._id)
 		await event.save()
 		res.redirect(`/kts-admin/event/${id}`)

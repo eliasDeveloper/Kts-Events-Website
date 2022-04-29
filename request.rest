@@ -21,8 +21,8 @@ POST http://localhost:3000/register
 Content-Type: application/json
 
 {
-	"email": "elias22@gmail.com",
-	"username":"elias22@gmail.com",
-	"password":"ayre",
-	"isAdmin": 2
+	"email": "dorsaf@gmail.com",
+	"username":"dorsaf@gmail.com",
+	"password":"fady",
+	"isAdmin": 1
 }
