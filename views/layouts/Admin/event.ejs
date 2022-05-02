@@ -27,7 +27,11 @@
 
 <body>
 	<%- include('../../partials/admin-partials/header.ejs') %>
+		<div class="container mt-5">
+			<%- include('../../partials/common-partials/flash.ejs') %>
+		</div>
 		<%- body %>
+
 			<script src="/javascript/landing-js/jquery-3.3.1.min.js"></script>
 			<script src="/javascript/landing-js/bootstrap.min.js"></script>
 			<script src="/javascript/landing-js/main.js"></script>
