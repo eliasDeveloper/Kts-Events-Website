@@ -19,8 +19,8 @@ router.get('/contact', (req, res) => {
 
 router.post('/register', catchAsync(async (req, res, next) => {
 	try {
-		const { email, username, password, isAdmin } = req.body;
-		const user = new User({ email, username, isAdmin });
+		const { username, password, isAdmin } = req.body;
+		const user = new User({ username, isAdmin });
 		const registeredUser = await User.register(user, password);
 		req.login(registeredUser, err => {
 			if (err) return next(err);
@@ -47,7 +47,7 @@ router.route('/login')
 			redirectUrl = req.session.returnTo || '/kts-admin/home';
 		}
 		else if (isAdmin == 1) {
-			redirectUrl = req.session.returnTo || '/event-owner';
+			redirectUrl = req.session.returnTo || '/event-owner/home';
 		}
 		else if (isAdmin == 0) {
 			redirectUrl = req.session.returnTo || '/invited-individual';

@@ -23,6 +23,8 @@ const nodemailer = require('nodemailer')
 //Routes
 const adminRoute = require('./routes/kts-admin')
 const userRoutes = require('./routes/users');
+const eventOwner = require('./routes/event-owner')
+
 //db connection
 connection()
 
@@ -69,6 +71,7 @@ app.use((req, res, next) => {
 
 app.use('/', userRoutes);
 app.use('/kts-admin', adminRoute)
+app.use('/event-owner', eventOwner)
 
 
 app.post('/contact', (req, res) => {
@@ -167,9 +170,6 @@ app.post('/subscribe', (req, res) => {
 	res.redirect('/')
 })
 
-app.get('/event-owner', isEventOwner, (req, res) => {
-	res.send('welcome to event owner')
-})
 
 app.get('/invited-individual', isInvited, (req, res) => {
 	res.send('welcome to invited individual page')
