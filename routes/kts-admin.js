@@ -6,6 +6,8 @@ const upload = multer({ storage })
 const Package = require('../models/kts-admin/package')
 const Event = require('../models/kts-admin/event')
 const { isLoggedIn, isAdmin } = require('../middleware/loggedIn')
+const { eventOwnerEmail } = require('../middleware/emailHandler')
+const User = require('../models/kts-admin/user')
 
 router.get('/home', isLoggedIn, isAdmin, async (req, res) => {
 	const events = await Event.find({})
@@ -17,11 +19,19 @@ router.get('/new-event', isLoggedIn, isAdmin, (req, res) => {
 })
 
 router.post('/event', isLoggedIn, isAdmin, async (req, res) => {
-	const { email } = req.body
-	const newEvent = new Event({ owner: `${email}` })
-	await newEvent.save().then(res => { console.log(`success to post event owner`) }).catch(err => { console.log(err) })
-	const id = newEvent._id.toString()
-	res.redirect(`/kts-admin/event/${id}/details`)
+	const { username } = req.body
+	const foundUser = await User.findOne({ username: `${username}` })
+	if (foundUser) {
+		req.flash('error', `${username} is already an event owner to an already existing event`)
+		res.redirect('/kts-admin/new-event')
+	}
+	else {
+		const newEvent = new Event({ owner: `${username}` })
+		await newEvent.save().then(res => { console.log(`success to post event owner`) }).catch(err => { console.log(err) })
+		const id = newEvent._id.toString()
+		await eventOwnerEmail(req, res, username, id)
+		res.redirect(`/kts-admin/event/${id}/details`)
+	}
 })
 
 router.route('/event/:eventid/details')
@@ -92,12 +102,17 @@ router.delete('/delete/package/:packageid/event/:eventId', isLoggedIn, isAdmin, 
 
 router.delete('/delete/event/:eventid', isLoggedIn, isAdmin, async (req, res) => {
 	const { eventid } = req.params
-	console.log(eventid)
-	const deleteEvent = await Event.findByIdAndDelete(eventid)
-	console.log(deleteEvent)
+	const event = await Event.findById(eventid).populate('packages')
+	for (let package of event.packages) {
+		await Package.findByIdAndDelete(package._id)
+	}
+	await Event.findByIdAndDelete(eventid)
+	const AllUsers = await User.find({ eventId: eventid })
+	for (let user of AllUsers) {
+		await User.findByIdAndDelete(user._id)
+	}
 	res.redirect('/kts-admin/home')
 })
-
 
 router.post('/SaveEvent/:eventid', isLoggedIn, isAdmin, async (req, res) => {
 	const { eventid } = req.params
